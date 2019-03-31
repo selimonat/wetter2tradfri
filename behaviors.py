@@ -18,6 +18,31 @@ def randomize_brightness(light_index,mean=128,duration=100,sigma=60):
     counter = 0
     for b in brightness:
         for light in lights:
+            #measure how long an api call lasts in second, and 
+            #see how realistical it is to control many lamps and still
+            #satisfy a given SAMPLING_RATE
             api(light.light_control.set_dimmer(b[0]))
+        #instead of sleeping given time, compute until when to sleep, because
+        #api calls take also some time in these type of synchronous calls.
         time.sleep(SAMPLING_RATE)
         counter += 1
+        print(counter)
+
+def randomize_color(light_index,duration=100,sigma=.02):
+    #duration in seconds
+    
+    number_of_samples  = duration/SAMPLING_RATE
+    #autenticate api
+    api = utils.autenticate_api()
+    #get all lights and select one or some
+    lights = utils.get_light(api,light_index)
+    #get the light sequence
+    xy  = s.xy_randomwalk(total_sample = number_of_samples,sigma=sigma)
+    #set the light brightness
+    counter = 0
+    for x,y in xy:
+        for light in lights:
+            api(light.light_control.set_xy_color(int(x),int(y)))
+        time.sleep(SAMPLING_RATE)
+        counter += 1
+        print(counter)
