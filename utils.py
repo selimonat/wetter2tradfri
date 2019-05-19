@@ -1,7 +1,7 @@
-from pytradfri.util import load_json, save_json
+from pytradfri.pytradfri.util import load_json, save_json
 import numpy as np
-from pytradfri.api.libcoap_api import APIFactory
-from pytradfri.gateway import Gateway
+from pytradfri.pytradfri.api.libcoap_api import APIFactory
+from pytradfri.pytradfri.gateway import Gateway
 
 
 def get_light(api,light_index):
