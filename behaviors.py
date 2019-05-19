@@ -7,6 +7,10 @@ import numpy as np
 
 def dimmer_program(light_index, start_up,stop_up):
 
+
+    max_light_value = 254
+    min_light_value = 0
+
     start_up = datetime.datetime.strptime(start_up,"%H:%M")
     stop_up  = datetime.datetime.strptime(stop_up,"%H:%M")
     #transform time to minutes of the day
@@ -17,10 +21,10 @@ def dimmer_program(light_index, start_up,stop_up):
     #weights for the increment.
     weights   = np.zeros(24*60,dtype=int)
     weights[(time_line >= f(start_up)) & (time_line < f(stop_up))] = 1
-
+    print(sum(weights))
     #number of brightness steps to cover full range
-    increment = 255/(1+f(stop_up)-f(start_up))
-
+    increment = (max_light_value-min_light_value+1)/(f(stop_up)-f(start_up))
+    print(f(stop_up)-f(start_up))
     #get light
     #autenticate api
     api       = utils.autenticate_api()
@@ -32,13 +36,17 @@ def dimmer_program(light_index, start_up,stop_up):
     previous = 0 
     while f(now) < 24*60:
         i   = f(now) #current_minute
-        new = max(min(255,previous + weights[i]*increment),0)
+        new = max(min(max_light_value,
+                      previous + weights[i]*increment),
+                      min_light_value)
+        new = int(new)
+        print(now.minute)
         print("current weight: {}".format(weights[i]))
         print("increment: {}".format(increment))
         print("new value: {}".format(new))
         print("setting new value")
         for light in lights:
-            api(light.light_control.set_dimmer(new.astype('uint8').tolist()))
+            api(light.light_control.set_dimmer(new))
         time.sleep(60)
         now = datetime.datetime.now()   
         previous = new
