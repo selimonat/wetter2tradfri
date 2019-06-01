@@ -5,8 +5,7 @@ import wetter2tradfri.sequences as s
 import datetime
 import numpy as np
 
-def dimmer_program(light_index, start_up,stop_up):
-
+def dimmer_program(light_index, start_up,stop_up,W=1):
 
     max_light_value = 254
     min_light_value = 0
@@ -20,7 +19,7 @@ def dimmer_program(light_index, start_up,stop_up):
 
     #weights for the increment.
     weights   = np.zeros(24*60,dtype=int)
-    weights[(time_line >= f(start_up)) & (time_line < f(stop_up))] = 1
+    weights[(time_line >= f(start_up)) & (time_line < f(stop_up))] = W
     print(sum(weights))
     #number of brightness steps to cover full range
     increment = (max_light_value-min_light_value+1)/(f(stop_up)-f(start_up))
@@ -33,7 +32,9 @@ def dimmer_program(light_index, start_up,stop_up):
     print(lights) 
     #current time
     now       = datetime.datetime.now() 
-    previous = 0 
+    previous = max_light_value
+    if W > 0:
+        previous = 0 
     while f(now) < 24*60:
         i   = f(now) #current_minute
         new = max(min(max_light_value,
