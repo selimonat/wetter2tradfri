@@ -4,6 +4,12 @@ from pytradfri.pytradfri.api.libcoap_api import APIFactory
 from pytradfri.pytradfri.gateway import Gateway
 
 
+def list_lights():
+    api = autenticate_api()
+    lights = get_light(api,slice(None))
+    for i,l in enumerate(lights):
+        print("{}:{}".format(i,l))
+    return lights
 def get_light(api,light_index):
     #returns light(s) selected by light_index 
     gateway = Gateway()
