@@ -5,8 +5,35 @@ import wetter2tradfri.sequences as s
 import datetime
 import numpy as np
 
-def dimmer_program(light_index, start_up,stop_up,W=1):
+from Realtime_GPS_Logger import geo_utils as geo_utils
 
+from math import e;
+
+def logistic(D):
+    #maps distance to a brighness value between 0 and 255
+    logistic = lambda x: (1/(1+e ** - D) - .5)*510
+    return logistic(D)
+
+def dim_by_distance(light_index=3):
+    """
+    will adjust the brightness of the LAMB_ID by user's distance to a fixed
+    position
+    """
+    INTERVAL = 60 #seconds
+    #autenticate api
+    api       = utils.autenticate_api()
+    #get all lights and select one or some
+    light    = utils.get_light(api,light_index)
+    while True:
+        distance = geo_utils.latlon_to_distance(geo_utils.last_observed_location())
+        brightness = logistic(distance)
+        print("{} : {}".format(distance,brightness))
+        api(light.light_control.set_dimmer(brightness))
+        time.sleep(INTERVAL)
+    
+
+def dimmer_program(light_index, start_up,stop_up,W=1):
+    #b.dimmer_program([7,13],"20:53","20:59",W=-1)
     max_light_value = 254
     min_light_value = 0
 
