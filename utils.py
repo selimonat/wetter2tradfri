@@ -1,10 +1,11 @@
+PYTRADFRI_PATH = '/home/pi/code/python/pytradfri'
+import sys;sys.path.append()
 from pytradfri.util import load_json, save_json
-import numpy as np
 from pytradfri.api.libcoap_api import APIFactory
 from pytradfri.gateway import Gateway
 
-PYTRADFRI_PATH = '/home/pi/code/python/pytradfri'
-import sys;sys.path.append()
+import numpy as np
+
 CONFIG_FILE = '/home/pi/code/python/pytradfri/tradfri_standalone_psk.conf'
 BRIDGE_IP = "192.168.2.167"
 
