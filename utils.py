@@ -1,5 +1,5 @@
-PYTRADFRI_PATH = '/home/pi/code/python/pytradfri'
-import sys;sys.path.append()
+PYTRADFRI_PATH = '/home/pi/code/python/pytradfri/'
+import sys;sys.path.append(PYTRADFRI_PATH )
 from pytradfri.util import load_json, save_json
 from pytradfri.api.libcoap_api import APIFactory
 from pytradfri.gateway import Gateway
