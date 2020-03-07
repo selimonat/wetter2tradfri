@@ -1,8 +1,12 @@
-from pytradfri.pytradfri.util import load_json, save_json
+from pytradfri.util import load_json, save_json
 import numpy as np
-from pytradfri.pytradfri.api.libcoap_api import APIFactory
-from pytradfri.pytradfri.gateway import Gateway
+from pytradfri.api.libcoap_api import APIFactory
+from pytradfri.gateway import Gateway
 
+PYTRADFRI_PATH = '/home/pi/code/python/pytradfri'
+import sys;sys.path.append()
+CONFIG_FILE = '/home/pi/code/python/pytradfri/tradfri_standalone_psk.conf'
+BRIDGE_IP = "192.168.2.167"
 
 def list_lights():
     api = autenticate_api()
@@ -22,9 +26,8 @@ def get_light(api,light_index):
     except:
         return lights[light_index]
 
-def autenticate_api(host="192.168.2.167"):
+def autenticate_api(host=BRIDGE_IP):
     #returns an authenticated API object
-    CONFIG_FILE = '/home/pi/code/python/pytradfri/tradfri_standalone_psk.conf'
     conf = load_json(CONFIG_FILE)
     identity = conf[host].get('identity')
     psk = conf[host].get('key')
