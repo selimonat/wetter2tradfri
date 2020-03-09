@@ -11,7 +11,7 @@ from math import e;
 
 def logistic(D):
     #maps distance to a brighness value between 0 and 255
-    logistic = lambda x: (1/(1+e ** - D) - .5)*510
+    logistic = lambda x: (1/(1+e ** - D) - .5)*508
     return logistic(D)
 
 
@@ -20,29 +20,26 @@ def dim_by_distance_historical(light_index,N_history,INTERVAL=60):
     """
     #authenticate api
     api       = utils.authenticate_api()
-    #get all lights and select one or some
-    light    = utils.get_light(api,light_index)
     while True:
         coor     = geo_utils.last_observed_location(N_history)
         for nrec in range(len(coor["lat"])):
-
+    
             time.sleep(INTERVAL)
+            timestamp = coor["timestamp"][nrec]
             distance =  geo_utils.latlon_to_distance((coor["lat"][nrec],coor["lon"][nrec]))
             brightness = int(logistic(distance))
-            print("{} : {}".format(distance,brightness))
+            print("{}==>{} : {}".format(timestamp,distance,brightness))
             try:
                 utils.set_light_dimmer(api,light_index,brightness)
             except:
-                print(1)
-
-
+                print("error in setting light dimmer\n")
  
-def dim_by_distance(light_index=3):
+def dim_by_distance(light_index=[3],INTERVAL = 60):
     """
     will adjust the brightness of the LAMB_ID by user's distance to a fixed
     position
     """
-    INTERVAL = 60 #seconds
+     #seconds
     #authenticate api
     api       = utils.authenticate_api()
     #get all lights and select one or some
@@ -50,10 +47,10 @@ def dim_by_distance(light_index=3):
     while True:
         coor     = geo_utils.last_observed_location(1)
         distance = geo_utils.latlon_to_distance((coor["lat"][0],coor["lon"][0]))
-        brightness = logistic(distance)
+        brightness = int(logistic(distance))
         print("{} : {}".format(distance,brightness))
         try:
-            api(light.light_control.set_dimmer(brightness))
+            utils.set_light_dimmer(api,light_index,brightness)
         except:
             print(1)
         time.sleep(INTERVAL)
