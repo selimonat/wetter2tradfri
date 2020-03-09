@@ -9,12 +9,22 @@ import numpy as np
 CONFIG_FILE = '/home/pi/code/python/pytradfri/tradfri_standalone_psk.conf'
 BRIDGE_IP = "192.168.2.167"
 
-def list_lights():
-    api = autenticate_api()
+
+
+def set_light_dimmer(api,light_index,value):
+    for i in light_index:
+        l=get_light(api,i);
+        api(l.light_control.set_dimmer(value))
+
+def list_all_lights():
+    api = authenticate_api()
     lights = get_light(api,slice(None))
     for i,l in enumerate(lights):
-        print("{}:{}".format(i,l))
+        print("{}: Light {}:\n\tState: {}, Value: {}".format(i,l,
+                                                            l.light_control.lights[0].state,
+                                                            l.light_control.lights[0].dimmer))
     return lights
+
 def get_light(api,light_index):
     #returns light(s) selected by light_index 
     gateway = Gateway()
@@ -27,7 +37,7 @@ def get_light(api,light_index):
     except:
         return lights[light_index]
 
-def autenticate_api(host=BRIDGE_IP):
+def authenticate_api(host=BRIDGE_IP):
     #returns an authenticated API object
     conf = load_json(CONFIG_FILE)
     identity = conf[host].get('identity')
