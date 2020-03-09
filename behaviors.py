@@ -14,21 +14,48 @@ def logistic(D):
     logistic = lambda x: (1/(1+e ** - D) - .5)*510
     return logistic(D)
 
+
+def dim_by_distance_historical(light_index,N_history,INTERVAL=60):
+    """
+    """
+    #authenticate api
+    api       = utils.authenticate_api()
+    #get all lights and select one or some
+    light    = utils.get_light(api,light_index)
+    while True:
+        coor     = geo_utils.last_observed_location(N_history)
+        for nrec in range(len(coor["lat"])):
+
+            time.sleep(INTERVAL)
+            distance =  geo_utils.latlon_to_distance((coor["lat"][nrec],coor["lon"][nrec]))
+            brightness = int(logistic(distance))
+            print("{} : {}".format(distance,brightness))
+            try:
+                utils.set_light_dimmer(api,light_index,brightness)
+            except:
+                print(1)
+
+
+ 
 def dim_by_distance(light_index=3):
     """
     will adjust the brightness of the LAMB_ID by user's distance to a fixed
     position
     """
     INTERVAL = 60 #seconds
-    #autenticate api
-    api       = utils.autenticate_api()
+    #authenticate api
+    api       = utils.authenticate_api()
     #get all lights and select one or some
     light    = utils.get_light(api,light_index)
     while True:
-        distance = geo_utils.latlon_to_distance(geo_utils.last_observed_location())
+        coor     = geo_utils.last_observed_location(1)
+        distance = geo_utils.latlon_to_distance((coor["lat"][0],coor["lon"][0]))
         brightness = logistic(distance)
         print("{} : {}".format(distance,brightness))
-        api(light.light_control.set_dimmer(brightness))
+        try:
+            api(light.light_control.set_dimmer(brightness))
+        except:
+            print(1)
         time.sleep(INTERVAL)
     
 
@@ -52,8 +79,8 @@ def dimmer_program(light_index, start_up,stop_up,W=1):
     increment = (max_light_value-min_light_value+1)/(f(stop_up)-f(start_up))
     print(f(stop_up)-f(start_up))
     #get light
-    #autenticate api
-    api       = utils.autenticate_api()
+    #authenticate api
+    api       = utils.authenticate_api()
     #get all lights and select one or some
     lights    = utils.get_light(api,light_index)
     print(lights) 
